@@ -109,18 +109,23 @@ export function makeMath(addends: number[]): string {
  * And the array [1, 9, 7] would become [1, 9, 7, 17]
  */
 export function injectPositive(values: number[]): number[] {
-    let inserted = false;
-
-    const result = values.reduce<{ sum: number; arr: number[] }>(
-        ({ sum, arr }, current) => {
+    const result = values.reduce<{
+        sum: number;
+        arr: number[];
+        inserted: boolean;
+    }>(
+        ({ sum, arr, inserted }, current) => {
             if (!inserted && current < 0) {
-                inserted = true;
-                return { sum: sum + current, arr: arr.concat([current, sum]) };
+                return {
+                    sum: sum + current,
+                    arr: arr.concat([current, sum]),
+                    inserted: true,
+                };
             }
-            return { sum: sum + current, arr: arr.concat([current]) };
+            return { sum: sum + current, arr: arr.concat([current]), inserted };
         },
-        { sum: 0, arr: [] },
+        { sum: 0, arr: [], inserted: false },
     );
 
-    return inserted ? result.arr : result.arr.concat([result.sum]);
+    return result.inserted ? result.arr : result.arr.concat([result.sum]);
 }
